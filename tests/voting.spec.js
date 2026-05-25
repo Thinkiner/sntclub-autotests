@@ -214,12 +214,20 @@ test('Голосование: открыть форму организации �
   console.log('  → Нажимаем "Добавить пункт Повестки дня" (первым!)...');
   const addAgendaItemLink = page.getByText(/Добавить пункт Повестки дня/i);
   await expect(addAgendaItemLink).toBeVisible({ timeout: 5_000 });
-  await addAgendaItemLink.click();
 
-  // Ждём появления поля пункта повестки по name (надёжнее placeholder)
-  // name="AGENDA_0_question" подтверждён из отладочного дампа формы
   const agendaItemField = page.locator('[name="AGENDA_0_question"]');
-  await expect(agendaItemField).toBeVisible({ timeout: 20_000 });
+  // Добавляем защиту от «раннего клика» до инициализации JS-обработчиков
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    await addAgendaItemLink.click();
+    try {
+      await expect(agendaItemField).toBeVisible({ timeout: 3_000 });
+      break; // Успешно появилось, выходим из цикла
+    } catch (e) {
+      console.log(`  ⚠️ Поле не появилось после клика (попытка ${attempt}/3). Повторяем клик...`);
+    }
+  }
+
+  await expect(agendaItemField).toBeVisible({ timeout: 15_000 });
   console.log('  ✓ Пункт повестки добавлен, AJAX завершён');
 
   // ── 2. Место / Дата / Присутствовали (ПОСЛЕ AJAX) ─────────────
