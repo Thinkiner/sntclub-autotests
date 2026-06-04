@@ -272,7 +272,15 @@ test('Публикация голосования', async ({ page }) => {
   await expect(btnBulletinIndividual).toBeVisible({ timeout: 10_000 });
   console.log('  ✓ Кнопка "Бюллетень для голосования для индивидуалов" найдена');
 
-  // ── Временное скачивание всех 6 файлов ───────────────────────
+  // ── 5.7. Скачать статистику голосования ──────────────────────
+  // Ссылка: <a href="/local/ajax/vote/export_users.php?ID=XXXX" class="button">
+  // Не привязываемся к ID — ищем по href-паттерну и тексту.
+  console.log('  → Проверяем кнопку "Скачать статистику голосования"...');
+  const btnExportStats = page.locator('a.button[href*="export_users.php"]');
+  await expect(btnExportStats).toBeVisible({ timeout: 10_000 });
+  console.log('  ✓ Кнопка "Скачать статистику голосования" найдена');
+
+  // ── Скачивание всех 7 файлов ──────────────────────────────────
   // Кликаем по каждой ссылке (target="_blank" откроет новую вкладку).
   // Сразу закрываем лишние вкладки, чтобы не засорять контекст.
   console.log('  → Кликаем по всем кнопкам скачивания...');
@@ -283,6 +291,7 @@ test('Публикация голосования', async ({ page }) => {
     btnTabulationTemplate,
     btnBulletin,
     btnBulletinIndividual,
+    btnExportStats,
   ];
 
   for (const btn of downloadButtons) {
