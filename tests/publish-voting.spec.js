@@ -14,8 +14,8 @@ const { test, expect } = require('@playwright/test');
 // и читать через process.env.EMAIL / process.env.PASSWORD
 // ─────────────────────────────────────────────────────────────
 const TEST_USER = {
-  email: 'uk@sntclub.ru',
-  password: '123321',
+  email: 'test.ramos@mail.ru',
+  password: 'Wqmyt1DZ7L',
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -64,11 +64,21 @@ async function login(page) {
   await expect(loginButton).toBeEnabled({ timeout: 5_000 });
   await loginButton.click();
 
+  // ── Экран выбора роли ────────────────────────────────────────
+  // У пользователя test.ramos@mail.ru после входа появляется
+  // промежуточный экран выбора роли. Выбираем «Председатель».
+  console.log('  → Проверяем, нет ли экрана выбора роли...');
+  try {
+    const chairmanBtn = page.locator('a, button').filter({ hasText: /Председатель/i }).first();
+    await chairmanBtn.waitFor({ state: 'visible', timeout: 5_000 });
+    console.log('  ℹ Обнаружен экран выбора роли — выбираем «Председатель»...');
+    await chairmanBtn.click();
+    console.log('  ✓ Роль «Председатель» выбрана');
+  } catch {
+    console.log('  ✓ Экрана выбора роли нет — продолжаем');
+  }
+
   // ── Ожидаем успешного входа ──────────────────────────────────
-  // Сайт работает как SPA — URL может не меняться после логина,
-  // поэтому waitForURL ненадёжен и был убран.
-  // Вместо этого ждём появления элемента, который есть только
-  // у авторизованного пользователя — пункта бокового меню.
   console.log('  → Ожидаем появления бокового меню после входа...');
   await expect(
     page.getByRole('link', { name: /Общие собрания и голосования/i })
