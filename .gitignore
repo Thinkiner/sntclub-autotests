@@ -1,5 +1,6 @@
 node_modules/
 playwright-report/
 test-results/
+tests/fixtures/
 .env
 .DS_Store
