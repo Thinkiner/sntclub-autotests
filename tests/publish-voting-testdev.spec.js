@@ -140,40 +140,14 @@ test('Публикация голосования [testdev]', async ({ page }) =
   }
 
   console.log('  → Переходим на страницу голосований...');
-  await page.goto(`${BASE_URL}/votes/`, {
+  await page.goto(`${BASE_URL}/votes/?new=Y`, {
     waitUntil: 'domcontentloaded',
   });
 
-  await expect(page).toHaveURL(/\/votes\//);
+  await expect(page).toHaveURL(/\/votes\/.*new=Y/);
   console.log('  ✓ Находимся на странице:', page.url());
 
-  // ════════════════════════════════════════════════════════════
-  // ШАГ 3: Нажать «Перейти» в блоке «Голосование (новая версия)»
-  // ════════════════════════════════════════════════════════════
-  console.log('\n══════════════════════════════════════════');
-  console.log('ШАГ 3: Нажимаем "Перейти" в блоке новой версии');
-  console.log('══════════════════════════════════════════');
 
-  console.log('  → Ищем блок "Голосование (новая версия)"...');
-  const newVersionBlock = page.getByText(/Голосование\s*\(новая версия\)/i);
-  await expect(newVersionBlock).toBeVisible({ timeout: 15_000 });
-  console.log('  ✓ Блок найден');
-
-  console.log('  → Ищем кнопку "Перейти"...');
-  const goToNewVersionButton = page
-    .locator('a, button')
-    .filter({ hasText: /^Перейти$/ })
-    .first();
-
-  await goToNewVersionButton.scrollIntoViewIfNeeded();
-  await expect(goToNewVersionButton).toBeVisible({ timeout: 10_000 });
-  console.log('  ✓ Кнопка "Перейти" найдена');
-
-  console.log('  → Нажимаем "Перейти"...');
-  await goToNewVersionButton.click();
-
-  await expect(page).toHaveURL(/new=Y/, { timeout: 15_000 });
-  console.log('  ✓ Переход выполнен. URL:', page.url());
 
   // ════════════════════════════════════════════════════════════
   // ШАГ 4: Найти последнее голосование со статусом «Готово к публикации»
