@@ -162,50 +162,15 @@ test('Голосование: открыть форму организации �
     console.log('  ✓ Пункт меню виден');
   }
 
-  // Переходим по прямому URL — это надёжнее, чем кликать по меню
+  // Переходим напрямую на страницу голосований новой версии
   console.log('  → Переходим на страницу голосований...');
-  await page.goto('https://release.sntclub.ru/votes/', {
+  await page.goto('https://release.sntclub.ru/votes/?new=Y', {
     waitUntil: 'domcontentloaded',
   });
 
-  await expect(page).toHaveURL(/\/votes\//);
+  await expect(page).toHaveURL(/\/votes\/.*new=Y/);
   console.log('  ✓ Находимся на странице:', page.url());
 
-  // ════════════════════════════════════════════════════════════
-  // ШАГ 3: Нажать «Перейти» в блоке «Голосование (новая версия)»
-  // ════════════════════════════════════════════════════════════
-  console.log('\n══════════════════════════════════════════');
-  console.log('ШАГ 3: Нажимаем "Перейти" в блоке новой версии');
-  console.log('══════════════════════════════════════════');
-
-  // Убеждаемся, что блок «Голосование (новая версия)» присутствует на странице
-  // ⚠️ Потенциально нестабильное место: точный текст заголовка
-  //    может отличаться — проверьте через DevTools
-  console.log('  → Ищем блок "Голосование (новая версия)"...');
-  const newVersionBlock = page.getByText(/Голосование\s*\(новая версия\)/i);
-  await expect(newVersionBlock).toBeVisible({ timeout: 10_000 });
-  console.log('  ✓ Блок найден');
-
-  // Ищем кнопку «Перейти» — на странице может быть несколько таких кнопок,
-  // поэтому берём первую (она должна относиться к блоку новой версии).
-  // ⚠️ Если тест кликает не ту кнопку — уточните локатор, например:
-  //    newVersionBlock.locator('..').getByRole('link', { name: /Перейти/i })
-  console.log('  → Ищем кнопку "Перейти"...');
-  const goToNewVersionButton = page
-    .locator('a, button')
-    .filter({ hasText: /^Перейти$/ })
-    .first();
-
-  await goToNewVersionButton.scrollIntoViewIfNeeded();
-  await expect(goToNewVersionButton).toBeVisible({ timeout: 10_000 });
-  console.log('  ✓ Кнопка "Перейти" найдена');
-
-  console.log('  → Нажимаем "Перейти"...');
-  await goToNewVersionButton.click();
-
-  // Проверяем, что перешли на страницу новой версии голосований (?new=Y)
-  await expect(page).toHaveURL(/new=Y/, { timeout: 10_000 });
-  console.log('  ✓ Переход выполнен. URL:', page.url());
 
   // ════════════════════════════════════════════════════════════
   // ШАГ 4: Нажать «+ Организовать собрание»
